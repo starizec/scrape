@@ -1,2 +1,1 @@
-cd /home/cloudpanel/htdocs/scrape/
-python3.9 scrape.py
+python3.9 /home/cloudpanel/htdocs/scrape/scrape.py
