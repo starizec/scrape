@@ -15,8 +15,8 @@ headers = {'user-agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWe
 #init db
 conn = mysql.connector.connect(
             host="localhost",
-            user="root",
-            password="",
+            user="davormysqltn",
+            password="z$ALE55OoS8V",
             database="tendersnetwork",
             charset="utf8mb4", 
             use_unicode=True
