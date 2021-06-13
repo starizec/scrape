@@ -5,14 +5,36 @@ from urllib3.util import Retry
 from requests.adapters import HTTPAdapter
 from bs4 import BeautifulSoup
 from datetime import datetime
+from fake_useragent import UserAgent
+from requests.exceptions import ConnectionError
+
+import proxies
+
+user_agent = UserAgent()
 
 scrape_time_start = time.time()
 
 country_id = 1 #croatia
 tag = "a" #search a href tag
-headers = {'user-agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0 Safari/605.1.15'}
 
+proxies.getProxies()
+proxy_ip = proxies.randomProxy(proxies.proxies)
+proxies = {
+    "http": "http://" + proxy_ip,
+    "https": "https://" + proxy_ip,
+}
+
+"""
 #init db
+conn = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="",
+            database="tendersnetwork",
+            charset="utf8mb4", 
+            use_unicode=True
+        )
+"""
 conn = mysql.connector.connect(
             host="localhost",
             user="davormysqltn",
@@ -30,7 +52,6 @@ all_locations = locations_cursor.fetchall()
 conn.commit()
 
 get_all_locations_time = time.time() - scrape_time_start
-#print(get_all_locations_time)
 
 scrape_locations_no = 0
 scrape_all_links = 0
@@ -48,10 +69,40 @@ for location in all_locations:
     session.max_redirects = 5
     
     try:
-        page = session.get(location[1], timeout=5, headers=headers) #scrape url
-    except (requests.exceptions.ConnectionError, requests.exceptions.TooManyRedirects) as errors:
-        page.status_code = 501
+        headers = {'user-agent': user_agent.random, 'Referer': 'http://google.hr', 'Connection': 'keep-alive'}
+
+        if "skole.hr" in location[1]:
+            page = session.get(location[1], timeout=5, proxies=proxies, headers=headers) #scrape url
+
+        else:
+            page = session.get(location[1], timeout=5, headers=headers) #scrape url
+
+    except requests.exceptions.TooManyRedirects:
+        page.status_code = 310
+        print('310')
         pass
+
+    except requests.exceptions.ConnectionError:
+        page.status_code = 503
+        print('503')
+        pass
+
+    except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.Timeout):
+        page.status_code = 408
+        print('408')
+        pass
+
+    except (requests.exceptions.URLRequired, requests.exceptions.HTTPError):
+        page.status_code = 404
+        print('404')
+        pass
+
+    except requests.exceptions.SSLError:
+        page.status_code = 495
+        print('495')
+        pass
+
+
     
     scrape = BeautifulSoup(page.content, 'html.parser') #get page contents
     
