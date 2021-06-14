@@ -22,7 +22,7 @@ proxies = {
     "http": "http://" + proxy_ip,
     "https": "https://" + proxy_ip,
 }
-
+"""
 #init db
 conn = mysql.connector.connect(
             host="localhost",
@@ -41,7 +41,7 @@ conn = mysql.connector.connect(
             charset="utf8mb4", 
             use_unicode=True
         )
-"""
+
 #get all locations
 locations_cursor = conn.cursor()
 locations_sql = "SELECT id, location_url FROM locations"
