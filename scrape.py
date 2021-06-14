@@ -6,7 +6,6 @@ from requests.adapters import HTTPAdapter
 from bs4 import BeautifulSoup
 from datetime import datetime
 from fake_useragent import UserAgent
-from requests.exceptions import ConnectionError
 
 import proxies
 
@@ -24,7 +23,6 @@ proxies = {
     "https": "https://" + proxy_ip,
 }
 
-"""
 #init db
 conn = mysql.connector.connect(
             host="localhost",
@@ -43,13 +41,23 @@ conn = mysql.connector.connect(
             charset="utf8mb4", 
             use_unicode=True
         )
-
+"""
 #get all locations
 locations_cursor = conn.cursor()
 locations_sql = "SELECT id, location_url FROM locations"
 locations_cursor.execute(locations_sql)
 all_locations = locations_cursor.fetchall()
 conn.commit()
+
+#get all scrape data
+location_data_sql = "SELECT scrape_url FROM scrape_data"
+location_data_cursor = conn.cursor(buffered=True)
+location_data_cursor.execute(location_data_sql)
+conn.commit()
+
+all_scrape_data = list(location_data_cursor.fetchall())
+
+scrape_data = [i[0] for i in all_scrape_data]
 
 get_all_locations_time = time.time() - scrape_time_start
 
@@ -114,17 +122,7 @@ for location in all_locations:
     for a in scrape.find_all(tag, href=True):
         process_location_data_time_start = time.time()
 
-        location_data_sql = "SELECT id FROM scrape_data WHERE scrape_url = %s"
-        location_data_val = (a['href'], )
-        location_data_cursor = conn.cursor(buffered=True)
-        location_data_cursor.execute(location_data_sql, location_data_val)
-        conn.commit()
-
-        location_data_cursor.fetchall()
-
-        row_count = location_data_cursor.rowcount
-
-        if row_count < 1:
+        if a['href'] not in scrape_data:
             #messure process location data time
             process_location_data_time = time.time() - process_location_data_time_start
 
