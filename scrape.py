@@ -41,7 +41,7 @@ conn = mysql.connector.connect(
 
 #get all locations
 locations_cursor = conn.cursor()
-locations_sql = "SELECT id, location_url FROM locations"
+locations_sql = "SELECT id, location_url FROM locations ORDER BY id DESC"
 locations_cursor.execute(locations_sql)
 all_locations = locations_cursor.fetchall()
 conn.commit()
