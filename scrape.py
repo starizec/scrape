@@ -19,7 +19,7 @@ max_retries = 3 #max retries for request
 timeouts = (10, 15) #connection timeout, read timeout
 
 proxies.getProxies()
-"""
+
 #init db
 conn = mysql.connector.connect(
             host="localhost",
@@ -38,7 +38,7 @@ conn = mysql.connector.connect(
             charset="utf8mb4", 
             use_unicode=True
         )
-
+"""
 #get all locations
 locations_cursor = conn.cursor()
 locations_sql = "SELECT id, location_url FROM locations ORDER BY id DESC"
