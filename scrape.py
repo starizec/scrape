@@ -10,18 +10,15 @@ from fake_useragent import UserAgent
 import proxies
 
 user_agent = UserAgent()
-
 scrape_time_start = time.time()
 
 country_id = 1 #croatia
 tag = "a" #search a href tag
+max_redirects = 5 #max redirects for request
+max_retries = 3 #max retries for request
+timeouts = (10, 15) #connection timeout, read timeout
 
 proxies.getProxies()
-proxy_ip = proxies.randomProxy(proxies.proxies)
-proxies = {
-    "http": "http://" + proxy_ip,
-    "https": "https://" + proxy_ip,
-}
 """
 #init db
 conn = mysql.connector.connect(
@@ -71,19 +68,24 @@ for location in all_locations:
     session = requests.Session() #start session
     retry = Retry(connect=2, backoff_factor=0.5)
 
-    adapter = HTTPAdapter(max_retries=3)
+    adapter = HTTPAdapter(max_retries=max_retries)
     session.mount('http://', adapter)
     session.mount('https://', adapter)
-    session.max_redirects = 5
+    session.max_redirects = max_redirects
     
     try:
         headers = {'user-agent': user_agent.random, 'Referer': 'http://google.hr', 'Connection': 'keep-alive'}
 
         if "skole.hr" in location[1]:
-            page = session.get(location[1], timeout=5, proxies=proxies, headers=headers) #scrape url
+            proxy_ip = proxies.randomProxy(proxies.proxies)
+            proxy = {
+                "http": "http://" + proxy_ip,
+                "https": "https://" + proxy_ip,
+            }
 
+            page = session.get(location[1], timeout=timeouts, proxies=proxy, headers=headers) #scrape url
         else:
-            page = session.get(location[1], timeout=5, headers=headers) #scrape url
+            page = session.get(location[1], timeout=timeouts, headers=headers) #scrape url
 
     except requests.exceptions.TooManyRedirects:
         page.status_code = 310
