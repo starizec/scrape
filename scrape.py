@@ -158,3 +158,5 @@ scrape_log_val = (country_id, total_scrape_time, scrape_locations_no, scrape_all
 scrape_log_cursor = conn.cursor()
 scrape_log_cursor.execute(scrape_log_sql, scrape_log_val)
 conn.commit()
+
+exit()
