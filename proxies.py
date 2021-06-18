@@ -44,15 +44,18 @@ def getProxies():
                 session.max_redirects = max_redirects
 
                 proxy_test_site = session.get(testing_url, headers=header, proxies=proxy, timeout=timeouts)
+                
+                status_code = proxy_test_site.status_code
 
             except requests.exceptions.RequestException as e:
                 print(e)
+                status_code = 500
                 pass
 
             proxy_test_time = time.time() - proxy_test_time_start
 
             if proxy_test_time < max_time:
-                if proxy_test_site.status_code == 200:
+                if status_code == 200:
                     proxies.append({'ip': item.select('td')[0].get_text(), 'port': item.select('td')[1].get_text()})
                     print(proxy)
 

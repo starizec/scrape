@@ -84,35 +84,37 @@ for location in all_locations:
             }
 
             page = session.get(location[1], timeout=timeouts, proxies=proxy, headers=headers) #scrape url
+            status_code = page.status_code
+
         else:
             page = session.get(location[1], timeout=timeouts, headers=headers) #scrape url
+            status_code = page.status_code
 
     except requests.exceptions.TooManyRedirects:
-        page.status_code = 310
-        print('310')
+        status_code = 310
         pass
 
     except requests.exceptions.ConnectionError:
-        page.status_code = 503
-        print('503')
+        status_code = 503
         pass
 
     except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.Timeout):
-        page.status_code = 408
-        print('408')
+        status_code = 408
         pass
 
     except (requests.exceptions.URLRequired, requests.exceptions.HTTPError):
-        page.status_code = 404
-        print('404')
+        status_code = 404
         pass
 
     except requests.exceptions.SSLError:
-        page.status_code = 495
-        print('495')
+        status_code = 495
         pass
 
-
+    except requests.exceptions.RequestException as e:
+        print(e)
+        status_code = 500
+        pass
+    
     
     scrape = BeautifulSoup(page.content, 'html.parser') #get page contents
     
@@ -145,7 +147,7 @@ for location in all_locations:
     
     #save scrape location data
     location_data_sql = "INSERT INTO scrape_locations (location_id, country_id, location_http_status_code, location_scrape_time, location_all_links_count, location_new_links_count, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-    location_data_val = (location[0], country_id, page.status_code, total_location_scrape_time, len(scrape.find_all(tag, href=True)), new_location_links, datetime.today().strftime('%Y-%m-%d %H:%M:%S'), datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
+    location_data_val = (location[0], country_id, status_code, total_location_scrape_time, len(scrape.find_all(tag, href=True)), new_location_links, datetime.today().strftime('%Y-%m-%d %H:%M:%S'), datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
     location_data_cursor = conn.cursor()
     location_data_cursor.execute(location_data_sql, location_data_val)
     conn.commit()
