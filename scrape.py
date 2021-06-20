@@ -12,11 +12,18 @@ import proxies
 user_agent = UserAgent()
 scrape_time_start = time.time()
 
+#scrape settings
 country_id = 1 #croatia
 tag = "a" #search a href tag
+
+#request lib
 max_redirects = 5 #max redirects for request
 max_retries = 3 #max retries for request
 timeouts = (10, 15) #connection timeout, read timeout
+
+#retry lib
+retries = 2
+backoff_factor = 0.3
 
 proxies.getProxies()
 """
@@ -66,7 +73,7 @@ for location in all_locations:
     scrape_location_time_start = time.time()
 
     session = requests.Session() #start session
-    retry = Retry(connect=2, backoff_factor=0.5)
+    retry = Retry(total=retries, read=retries, connect=retries, backoff_factor=backoff_factor)
 
     adapter = HTTPAdapter(max_retries=max_retries)
     session.mount('http://', adapter)
