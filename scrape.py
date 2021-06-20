@@ -68,6 +68,8 @@ get_all_locations_time = time.time() - scrape_time_start
 scrape_locations_no = 0
 scrape_all_links = 0
 scrape_new_links = 0
+scrape_404_count = 0
+scrape_5xx_count = 0
 
 for location in all_locations:
     scrape_location_time_start = time.time()
@@ -149,6 +151,8 @@ for location in all_locations:
         scrape_all_links += 1
         
     scrape_locations_no += 1
+    scrape_404_count += 1
+    scrape_5xx_count += 1
         
     total_location_scrape_time = time.time() - scrape_location_time_start
     
@@ -162,8 +166,8 @@ for location in all_locations:
 total_scrape_time = time.time() - scrape_time_start
 
 #save scrape logs
-scrape_log_sql = "INSERT INTO scrapes (country_id, scrape_time, scrape_locations_count, scrape_all_links_count, scrape_new_links_count,  created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-scrape_log_val = (country_id, total_scrape_time, scrape_locations_no, scrape_all_links, scrape_new_links, datetime.today().strftime('%Y-%m-%d %H:%M:%S'), datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
+scrape_log_sql = "INSERT INTO scrapes (country_id, scrape_time, scrape_locations_count, scrape_all_links_count, scrape_new_links_count, 404_count, 5xx_count, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+scrape_log_val = (country_id, total_scrape_time, scrape_locations_no, scrape_all_links, scrape_new_links, scrape_404_count, scrape_5xx_count, datetime.today().strftime('%Y-%m-%d %H:%M:%S'), datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
 scrape_log_cursor = conn.cursor()
 scrape_log_cursor.execute(scrape_log_sql, scrape_log_val)
 conn.commit()
