@@ -18,11 +18,11 @@ tag = "a" #search a href tag
 
 #request lib
 max_redirects = 5 #max redirects for request
-max_retries = 3 #max retries for request
-timeouts = (10, 15) #connection timeout, read timeout
+max_retries = 2 #max retries for request
+timeouts = (6, 10) #connection timeout, read timeout
 
 #retry lib
-retries = 2
+retries = 1
 backoff_factor = 0.3
 
 proxies.getProxies()
