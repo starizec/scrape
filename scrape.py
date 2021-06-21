@@ -70,6 +70,7 @@ scrape_all_links = 0
 scrape_new_links = 0
 scrape_404_count = 0
 scrape_5xx_count = 0
+scrape_started_at = datetime.today().strftime('%Y-%m-%d %H:%M:%S'),
 
 for location in all_locations:
     scrape_location_time_start = time.time()
@@ -105,6 +106,7 @@ for location in all_locations:
 
     except requests.exceptions.ConnectionError:
         status_code = 503
+        scrape_5xx_count += 1
         pass
 
     except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.Timeout):
@@ -113,6 +115,7 @@ for location in all_locations:
 
     except (requests.exceptions.URLRequired, requests.exceptions.HTTPError):
         status_code = 404
+        scrape_404_count += 1
         pass
 
     except requests.exceptions.SSLError:
@@ -120,8 +123,8 @@ for location in all_locations:
         pass
 
     except requests.exceptions.RequestException as e:
-        print(e)
         status_code = 500
+        scrape_5xx_count += 1
         pass
     
     
@@ -151,8 +154,6 @@ for location in all_locations:
         scrape_all_links += 1
         
     scrape_locations_no += 1
-    scrape_404_count += 1
-    scrape_5xx_count += 1
         
     total_location_scrape_time = time.time() - scrape_location_time_start
     
@@ -166,8 +167,8 @@ for location in all_locations:
 total_scrape_time = time.time() - scrape_time_start
 
 #save scrape logs
-scrape_log_sql = "INSERT INTO scrapes (country_id, scrape_time, scrape_locations_count, scrape_all_links_count, scrape_new_links_count, 404_count, 5xx_count, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-scrape_log_val = (country_id, total_scrape_time, scrape_locations_no, scrape_all_links, scrape_new_links, scrape_404_count, scrape_5xx_count, datetime.today().strftime('%Y-%m-%d %H:%M:%S'), datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
+scrape_log_sql = "INSERT INTO scrapes (country_id, scrape_time, scrape_locations_count, scrape_all_links_count, scrape_new_links_count, scrape_404_count, scrape_5xx_count, started_at, ended_at, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+scrape_log_val = (country_id, total_scrape_time, scrape_locations_no, scrape_all_links, scrape_new_links, scrape_404_count, scrape_5xx_count, scrape_started_at, datetime.today().strftime('%Y-%m-%d %H:%M:%S'), datetime.today().strftime('%Y-%m-%d %H:%M:%S'), datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
 scrape_log_cursor = conn.cursor()
 scrape_log_cursor.execute(scrape_log_sql, scrape_log_val)
 conn.commit()
