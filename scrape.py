@@ -26,7 +26,7 @@ retries = 1
 backoff_factor = 0.3
 
 proxies.getProxies()
-"""
+
 #init db
 conn = mysql.connector.connect(
             host="localhost",
@@ -45,7 +45,7 @@ conn = mysql.connector.connect(
             charset="utf8mb4", 
             use_unicode=True
         )
-
+"""
 #get all locations
 locations_cursor = conn.cursor()
 locations_sql = "SELECT id, location_url FROM locations ORDER BY id DESC"
@@ -70,7 +70,7 @@ scrape_all_links = 0
 scrape_new_links = 0
 scrape_404_count = 0
 scrape_5xx_count = 0
-scrape_started_at = datetime.today().strftime('%Y-%m-%d %H:%M:%S'),
+scrape_started_at = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
 
 for location in all_locations:
     scrape_location_time_start = time.time()
@@ -126,7 +126,6 @@ for location in all_locations:
         status_code = 500
         scrape_5xx_count += 1
         pass
-    
     
     scrape = BeautifulSoup(page.content, 'html.parser') #get page contents
     
