@@ -9,6 +9,8 @@ from fake_useragent import UserAgent
 
 import proxies
 
+print('Scrape started - ' + datetime.today().strftime("%Y-%m-%d %H:%M:%S"))
+
 user_agent = UserAgent()
 scrape_time_start = time.time()
 
@@ -167,7 +169,7 @@ for location in all_locations:
 total_scrape_time = time.time() - scrape_time_start
 
 #save scrape logs
-scrape_log_sql = "INSERT INTO scrapes (country_id, scrape_time, scrape_locations_count, scrape_all_links_count, scrape_new_links_count, scrape_404_count, scrape_5xx_count, started_at, ended_at, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+scrape_log_sql = "INSERT INTO scrapes (country_id, scrape_time, scrape_locations_count, scrape_all_links_count, scrape_new_links_count, scrape_404_count, scrape_5xx_count, started_at, ended_at, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 scrape_log_val = (country_id, total_scrape_time, scrape_locations_no, scrape_all_links, scrape_new_links, scrape_404_count, scrape_5xx_count, scrape_started_at, datetime.today().strftime('%Y-%m-%d %H:%M:%S'), datetime.today().strftime('%Y-%m-%d %H:%M:%S'), datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
 scrape_log_cursor = conn.cursor()
 scrape_log_cursor.execute(scrape_log_sql, scrape_log_val)
