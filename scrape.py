@@ -109,7 +109,6 @@ for location in all_locations:
 
     except requests.exceptions.ConnectionError:
         status_code = 503
-        scrape_5xx_count += 1
         pass
 
     except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.Timeout):
@@ -118,7 +117,6 @@ for location in all_locations:
 
     except (requests.exceptions.URLRequired, requests.exceptions.HTTPError):
         status_code = 404
-        scrape_404_count += 1
         pass
 
     except requests.exceptions.SSLError:
@@ -127,8 +125,13 @@ for location in all_locations:
 
     except requests.exceptions.RequestException as e:
         status_code = 500
-        scrape_5xx_count += 1
         pass
+
+    if("4" in str(status_code)[0]):
+        scrape_404_count += 1
+
+    if("5" in str(status_code)[0]):
+        scrape_5xx_count += 1
     
     scrape = BeautifulSoup(page.content, 'html.parser') #get page contents
     
