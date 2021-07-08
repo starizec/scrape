@@ -15,6 +15,8 @@ print('Scrape started - ' + datetime.today().strftime("%Y-%m-%d %H:%M:%S"))
 user_agent = UserAgent()
 scrape_time_start = time.time()
 
+tender_links = []
+
 #scrape settings
 country_id = 1 #croatia
 tag = "a" #search a href tag
@@ -30,7 +32,7 @@ backoff_factor = 0.3
 
 #create proxies
 proxies.getProxies()
-
+"""
 #init db
 conn = mysql.connector.connect(
             host="localhost",
@@ -49,7 +51,7 @@ conn = mysql.connector.connect(
             charset="utf8mb4", 
             use_unicode=True
         )
-"""
+
 #get all locations
 locations_cursor = conn.cursor()
 locations_sql = "SELECT id, location_url FROM locations ORDER BY id DESC"
@@ -156,14 +158,21 @@ for location in all_locations:
                 else:
                     tender_link = "{0.scheme}://{0.netloc}".format(urlsplit(location[1]))+"/"+a['href'][:3000]
 
-            scrape_data_sql = "INSERT INTO scrape_data (location_id, country_id, scrape_url, scrape_text, data_scrape_time, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-            scrape_data_val = (location[0], country_id, tender_link, a.text[:2048], process_location_data_time, datetime.today().strftime('%Y-%m-%d %H:%M:%S'), datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
-            scrape_data_cursor = conn.cursor()
-            scrape_data_cursor.execute(scrape_data_sql, scrape_data_val)
-            conn.commit()
+            if tender_link not in tender_links:
+                scrape_data_sql = "INSERT INTO scrape_data (location_id, country_id, scrape_url, scrape_text, data_scrape_time, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                scrape_data_val = (location[0], country_id, tender_link, a.text[:2048], process_location_data_time, datetime.today().strftime('%Y-%m-%d %H:%M:%S'), datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
+                scrape_data_cursor = conn.cursor()
+                scrape_data_cursor.execute(scrape_data_sql, scrape_data_val)
+                conn.commit()
 
-            new_location_links += 1
-            scrape_new_links += 1
+                tender_links.append(tender_link)
+
+                new_location_links += 1
+                scrape_new_links += 1
+            else:
+                print('double_entry')
+
+            print(tender_links)
         
         scrape_all_links += 1
         
