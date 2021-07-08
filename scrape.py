@@ -54,7 +54,7 @@ conn = mysql.connector.connect(
 
 #get all locations
 locations_cursor = conn.cursor()
-locations_sql = "SELECT id, location_url FROM locations ORDER BY id DESC"
+locations_sql = "SELECT id, location_url FROM locations WHERE country_id = {} AND location_status = 1 ORDER BY id DESC".format(country_id)
 locations_cursor.execute(locations_sql)
 all_locations = locations_cursor.fetchall()
 conn.commit()
