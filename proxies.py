@@ -132,7 +132,3 @@ def formatProxy(proxy_ip, proxy_port):
             }
 
     return proxy
-
-getProxies()
-
-print(proxies)
