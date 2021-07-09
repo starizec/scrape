@@ -1,6 +1,5 @@
 import requests
 import time
-import mysql.connector
 from urllib3.util import Retry
 from urllib.parse import urlsplit
 from requests.adapters import HTTPAdapter
@@ -8,6 +7,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from fake_useragent import UserAgent
 
+from mysql_connection import conn
 import proxies
 
 print('Scrape started - ' + datetime.today().strftime("%Y-%m-%d %H:%M:%S"))
@@ -32,25 +32,6 @@ backoff_factor = 0.3
 
 #create proxies
 proxies.getProxies()
-"""
-#init db
-conn = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="tendersnetwork",
-            charset="utf8mb4", 
-            use_unicode=True
-        )
-"""
-conn = mysql.connector.connect(
-            host="localhost",
-            user="davormysqltn",
-            password="z$ALE55OoS8V",
-            database="tendersnetwork",
-            charset="utf8mb4", 
-            use_unicode=True
-        )
 
 #get all locations
 locations_cursor = conn.cursor()
