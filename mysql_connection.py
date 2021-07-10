@@ -1,20 +1,11 @@
 import mysql.connector
+from variables import *
 
-"""
 conn = mysql.connector.connect(
             host="localhost",
-            user="root",
-            password="",
-            database="tendersnetwork",
-            charset="utf8mb4", 
-            use_unicode=True
-        )
-"""
-conn = mysql.connector.connect(
-            host="localhost",
-            user="davormysqltn",
-            password="z$ALE55OoS8V",
-            database="tendersnetwork",
+            user=db_user,
+            password=db_password,
+            database=database,
             charset="utf8mb4", 
             use_unicode=True
         )

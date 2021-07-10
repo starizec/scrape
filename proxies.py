@@ -51,8 +51,7 @@ def getNewProxies():
             status_code = testProxy(item.select('td')[0].get_text(), item.select('td')[1].get_text())
 
             proxy_test_time = time.time() - proxy_test_time_start
-            print(status_code)
-            print(proxy_test_time)
+
             if proxy_test_time < max_time:
                 if status_code == 200:
                     storeProxy(item.select('td')[0].get_text(), item.select('td')[1].get_text(), item.select('td')[2].get_text())
@@ -119,7 +118,6 @@ def testProxy(proxy_ip, proxy_port, test_url = "https://www.osijek.hr/"):
         status_code = proxy_test_site.status_code
 
     except requests.exceptions.RequestException as e:
-        print(e)
         status_code = 500
         pass
 
