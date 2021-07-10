@@ -32,7 +32,7 @@ def getScrapeData(country_id):
 
 def storeScrapeData(location_id, country_id, tender_link, scrape_text, data_scrape_time):
     scrape_data_sql = "INSERT INTO scrape_data (location_id, country_id, scrape_url, scrape_text, data_scrape_time, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-    scrape_data_val = (location_id, country_id, tender_link, scrape_text[:2048], data_scrape_time, datetime.today().strftime('%Y-%m-%d %H:%M:%S'), datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
+    scrape_data_val = (location_id, country_id, tender_link[:3000], scrape_text[:2048], data_scrape_time, datetime.today().strftime('%Y-%m-%d %H:%M:%S'), datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
     scrape_data_cursor = conn.cursor()
     scrape_data_cursor.execute(scrape_data_sql, scrape_data_val)
     conn.commit()
