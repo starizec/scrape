@@ -20,7 +20,7 @@ def getLocations(country_id):
     return all_locations
 
 def getScrapeData(country_id):
-    location_data_sql = "SELECT scrape_url FROM scrape_data"
+    location_data_sql = "SELECT scrape_url FROM scrape_data WHERE country_id = {}".format(country_id)
     location_data_cursor = conn.cursor(buffered=True)
     location_data_cursor.execute(location_data_sql)
     conn.commit()

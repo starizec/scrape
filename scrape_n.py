@@ -109,17 +109,17 @@ def startScrape(country_id):
         for a in scrape.find_all("a", href=True):
             process_location_data_time_start = time.time()
 
-            if a['href'] not in scrape_data:
+            if('http' in a['href']):
+                tender_link = a['href'][:3000]
+            else:
+                if a['href'][0] == "/":
+                    tender_link = "{0.scheme}://{0.netloc}".format(urlsplit(location[1]))+a['href'][:3000]
+                else:
+                    tender_link = "{0.scheme}://{0.netloc}".format(urlsplit(location[1]))+"/"+a['href'][:3000]
+
+            if tender_link not in scrape_data:
                 #messure process location data time
                 process_location_data_time = time.time() - process_location_data_time_start
-
-                if('http' in a['href']):
-                    tender_link = a['href'][:3000]
-                else:
-                    if a['href'][0] == "/":
-                        tender_link = "{0.scheme}://{0.netloc}".format(urlsplit(location[1]))+a['href'][:3000]
-                    else:
-                        tender_link = "{0.scheme}://{0.netloc}".format(urlsplit(location[1]))+"/"+a['href'][:3000]
 
                 if tender_link not in tender_links:
                     storeScrapeData(location[0], country_id, tender_link, a.text[:2048], process_location_data_time)
