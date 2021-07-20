@@ -107,10 +107,14 @@ def startScrape(country_id):
         new_location_links = 0
 
         for a in scrape.find_all("a", href=True):
+            if not a['href']:
+                continue
+            
             process_location_data_time_start = time.time()
 
             if('http' in a['href']):
                 tender_link = a['href'][:3000]
+
             else:
                 if a['href'][0] == "/":
                     tender_link = "{0.scheme}://{0.netloc}".format(urlsplit(location[1]))+a['href'][:3000]
