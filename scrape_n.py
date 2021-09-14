@@ -14,6 +14,7 @@ from scrape_functions import *
 
 scrape_time_start = time.time()
 
+
 def startScrape(country_id):
     user_agent = UserAgent()
 
@@ -33,30 +34,32 @@ def startScrape(country_id):
 
     scrape_started_at = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
-    #start location scrape
+    # start location scrape
     for location in locations:
         scrape_location_time_start = time.time()
 
-        #start session
+        # start session
         session = requests.Session()
-        
-        #retry lib
+
+        # retry lib
         retries = 1
         backoff_factor = 0.3
-        retry = Retry(total=retries, read=retries, connect=retries, backoff_factor=backoff_factor)
+        retry = Retry(total=retries, read=retries,
+                      connect=retries, backoff_factor=backoff_factor)
 
-        #request lib
-        max_redirects = 5 #max redirects for request
-        max_retries = 2 #max retries for request
-        timeouts = (6, 10) #connection timeout, read timeout
+        # request lib
+        max_redirects = 5  # max redirects for request
+        max_retries = 2  # max retries for request
+        timeouts = (6, 10)  # connection timeout, read timeout
         adapter = HTTPAdapter(max_retries=max_retries)
         session.mount('http://', adapter)
         session.mount('https://', adapter)
         session.max_redirects = max_redirects
 
-        #request location
+        # request location
         try:
-            headers = {'user-agent': user_agent.random, 'Referer': 'http://google.hr', 'Connection': 'keep-alive'}
+            headers = {'user-agent': user_agent.random,
+                       'Referer': 'http://google.hr', 'Connection': 'keep-alive'}
 
             if "skole.hr" in location[1] and environment == "production":
                 proxy_ip = proxies.randomProxy(proxies.proxies)
@@ -65,13 +68,16 @@ def startScrape(country_id):
                     "https": "https://" + proxy_ip,
                 }
 
-                page = session.get(location[1], timeout=timeouts, proxies=proxy, headers=headers) #scrape url
+                page = session.get(
+                    location[1], timeout=timeouts, proxies=proxy, headers=headers)  # scrape url
                 status_code = page.status_code
 
             else:
-                page = session.get(location[1], timeout=timeouts, headers=headers) #scrape url
+                page = session.get(
+                    location[1], timeout=timeouts, headers=headers)  # scrape url
                 status_code = page.status_code
 
+            print(page.cookies)
         except requests.exceptions.TooManyRedirects:
             status_code = 310
             pass
@@ -101,15 +107,18 @@ def startScrape(country_id):
 
         if("5" in str(status_code)[0]):
             scrape_5xx_count += 1
-        
-        scrape = BeautifulSoup(page.content, 'html.parser') #get page contents
+
+        scrape = BeautifulSoup(
+            page.content, 'html.parser')  # get page contents
+
+        page.cookies.clear()
 
         new_location_links = 0
 
         for a in scrape.find_all("a", href=True):
             if not a['href']:
                 continue
-            
+
             process_location_data_time_start = time.time()
 
             if('http' in a['href']):
@@ -117,30 +126,36 @@ def startScrape(country_id):
 
             else:
                 if a['href'][0] == "/":
-                    tender_link = "{0.scheme}://{0.netloc}".format(urlsplit(location[1]))+a['href'][:3000]
+                    tender_link = "{0.scheme}://{0.netloc}".format(
+                        urlsplit(location[1]))+a['href'][:3000]
                 else:
-                    tender_link = "{0.scheme}://{0.netloc}".format(urlsplit(location[1]))+"/"+a['href'][:3000]
+                    tender_link = "{0.scheme}://{0.netloc}".format(
+                        urlsplit(location[1]))+"/"+a['href'][:3000]
 
             if tender_link not in scrape_data:
-                #messure process location data time
+                # messure process location data time
                 process_location_data_time = time.time() - process_location_data_time_start
 
                 if tender_link not in tender_links:
-                    storeScrapeData(location[0], country_id, tender_link, a.text[:2048], process_location_data_time)
+
+                    storeScrapeData(
+                        location[0], country_id, tender_link, a.text[:2048], process_location_data_time)
 
                     tender_links.append(tender_link)
 
                     new_location_links += 1
                     scrape_new_links += 1
-            
+
             scrape_all_links += 1
 
         scrape_locations_no += 1
-        
+
         total_location_scrape_time = time.time() - scrape_location_time_start
 
-        storeScrapeLocationData(location[0], country_id, status_code, total_location_scrape_time, len(scrape.find_all("a", href=True)), new_location_links)
+        storeScrapeLocationData(location[0], country_id, status_code, total_location_scrape_time, len(
+            scrape.find_all("a", href=True)), new_location_links)
 
     total_scrape_time = time.time() - scrape_time_start
 
-    storeScrapeLogs(country_id, total_scrape_time, scrape_locations_no, scrape_all_links, scrape_new_links, scrape_404_count, scrape_5xx_count, scrape_started_at)
+    storeScrapeLogs(country_id, total_scrape_time, scrape_locations_no, scrape_all_links,
+                    scrape_new_links, scrape_404_count, scrape_5xx_count, scrape_started_at)
