@@ -77,7 +77,6 @@ def startScrape(country_id):
                     location[1], timeout=timeouts, headers=headers)  # scrape url
                 status_code = page.status_code
 
-            print(page.cookies)
         except requests.exceptions.TooManyRedirects:
             status_code = 310
             pass
