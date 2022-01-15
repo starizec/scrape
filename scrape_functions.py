@@ -8,8 +8,6 @@ def getCountries():
     countries_cursor.execute(countries_sql)
     all_countries = countries_cursor.fetchall()
     conn.commit()
-    countries_cursor.close()
-    conn.close()
 
     return all_countries
 
@@ -21,8 +19,6 @@ def getLocations(country_id):
     locations_cursor.execute(locations_sql)
     all_locations = locations_cursor.fetchall()
     conn.commit()
-    locations_cursor.close()
-    conn.close()
 
     return all_locations
 
@@ -33,8 +29,6 @@ def getScrapeData(country_id):
     location_data_cursor = conn.cursor(buffered=True)
     location_data_cursor.execute(location_data_sql)
     conn.commit()
-    location_data_cursor.close()
-    conn.close()
 
     all_scrape_data = list(location_data_cursor.fetchall())
     scrape_data = [i[0] for i in all_scrape_data]
@@ -49,8 +43,6 @@ def storeScrapeData(location_id, country_id, tender_link, scrape_text, data_scra
     scrape_data_cursor = conn.cursor()
     scrape_data_cursor.execute(scrape_data_sql, scrape_data_val)
     conn.commit()
-    scrape_data_cursor.close()
-    conn.close()
 
 
 def storeScrapeLocationData(location_id, country_id, location_http_status_code, location_scrape_time, location_all_links_count, new_location_links):
@@ -60,8 +52,6 @@ def storeScrapeLocationData(location_id, country_id, location_http_status_code, 
     location_data_cursor = conn.cursor()
     location_data_cursor.execute(location_data_sql, location_data_val)
     conn.commit()
-    location_data_cursor.close()
-    conn.close()
 
 
 def storeScrapeLogs(country_id, total_scrape_time, scrape_locations_no, scrape_all_links, scrape_new_links, scrape_404_count, scrape_5xx_count, scrape_started_at):
@@ -71,5 +61,3 @@ def storeScrapeLogs(country_id, total_scrape_time, scrape_locations_no, scrape_a
     scrape_log_cursor = conn.cursor()
     scrape_log_cursor.execute(scrape_log_sql, scrape_log_val)
     conn.commit()
-    scrape_log_cursor.close()
-    conn.close()

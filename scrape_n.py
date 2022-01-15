@@ -17,9 +17,9 @@ scrape_time_start = time.time()
 
 def startScrape(country_id):
     try:
-        ua = UserAgent()
+        user_agent = UserAgent(use_cache_server=False)
     except FakeUserAgentError:
-        pass
+        user_agent = ""
 
     if environment == "production":
         proxies.getProxies()
