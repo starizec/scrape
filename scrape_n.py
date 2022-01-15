@@ -122,6 +122,9 @@ def startScrape(country_id):
             if not a['href']:
                 continue
 
+            print(a)
+            print(datetime.today().strftime("%Y-%m-%d %H:%M:%S"))
+
             process_location_data_time_start = time.time()
 
             if('http' in a['href']):
