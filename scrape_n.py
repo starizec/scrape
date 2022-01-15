@@ -2,6 +2,7 @@ import time
 import requests
 from datetime import datetime
 from fake_useragent import UserAgent
+from fake_useragent import FakeUserAgentError
 from urllib3.util import Retry
 from requests.adapters import HTTPAdapter
 from bs4 import BeautifulSoup
@@ -17,9 +18,9 @@ scrape_time_start = time.time()
 
 def startScrape(country_id):
     try:
-        user_agent = UserAgent(use_cache_server=False)
+        user_agent = UserAgent()
     except FakeUserAgentError:
-        user_agent = ""
+        user_agent = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
 
     if environment == "production":
         proxies.getProxies()
