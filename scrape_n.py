@@ -16,7 +16,10 @@ scrape_time_start = time.time()
 
 
 def startScrape(country_id):
-    user_agent = UserAgent()
+    try:
+        ua = UserAgent()
+    except FakeUserAgentError:
+        pass
 
     if environment == "production":
         proxies.getProxies()
@@ -110,7 +113,7 @@ def startScrape(country_id):
         scrape = BeautifulSoup(
             page.content, 'html.parser')  # get page contents
 
-        page.cookies.clear()
+        """ page.cookies.clear() """
 
         new_location_links = 0
 
